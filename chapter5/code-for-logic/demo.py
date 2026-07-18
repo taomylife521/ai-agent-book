@@ -24,7 +24,7 @@
     python demo.py --mode pure           # 只跑纯思考
     python demo.py --limit 4             # 只跑前 4 题(省钱冒烟测试)
     python demo.py --max-people 3        # 只跑不超过 3 人的谜题(按难度筛选)
-    python demo.py --model gpt-5.6-luna   # 指定模型
+    python demo.py --model gpt-4o-mini    # 指定模型(默认 gpt-4o-mini)
     python demo.py --puzzles my.json     # 换一份谜题数据集
 """
 import argparse
@@ -51,7 +51,7 @@ def _load_dotenv(path=".env"):
 
 _load_dotenv()
 
-MODEL = os.environ.get("MODEL", "gpt-5.6-luna")
+MODEL = os.environ.get("MODEL", "gpt-4o-mini")
 
 # --- 通用 OpenRouter 兜底：无直连 key 时自动改走 OpenRouter ---
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
@@ -78,8 +78,9 @@ def map_model_to_openrouter(model: str) -> str:
 def build_client_and_model():
     """构造 OpenAI 客户端并返回 (client, model)。
 
-    - 有 OPENAI_API_KEY：直连；但默认模型 gpt-5.6-luna（gpt-5.x）在同时设置了
-      OPENROUTER_API_KEY 时优先走 OpenRouter（直连 gpt-5.6 需组织实名认证）。
+    - 有 OPENAI_API_KEY：直连（默认模型 gpt-4o-mini 是普通 gpt id，可直连 OpenAI）。
+      仅当模型是 gpt-5.x 且同时设置了 OPENROUTER_API_KEY 时才优先走 OpenRouter
+      （直连 gpt-5.x 需组织实名认证）。
     - 无 OPENAI_API_KEY 但有 OPENROUTER_API_KEY：整体改走 OpenRouter。
     """
     from openai import OpenAI

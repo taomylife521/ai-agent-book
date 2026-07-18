@@ -43,7 +43,7 @@ def _safe_create(client, **kwargs):
     """调用 Chat Completions；对推理型模型（如 gpt-5.x）的参数限制做自动降级重试：
     - 不支持 max_tokens 时改用 max_completion_tokens；
     - 不支持非默认 temperature 时移除该参数（回退到模型默认 1）。
-    这样同一份代码既能跑传统模型（gpt-4o，temperature=0.8），也能跑推理模型。"""
+    这样同一份代码既能跑传统对话模型（接受 temperature=0.8），也能跑推理模型。"""
     for _ in range(3):
         try:
             return client.chat.completions.create(**kwargs)

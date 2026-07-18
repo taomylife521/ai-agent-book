@@ -80,7 +80,7 @@ python demo.py --help                # 查看全部参数
 
 ## 预期输出示例（真实运行片段）
 
-以下摘自一次真实运行（`python demo.py`，模型 gpt-4o-mini）：
+以下摘自一次真实运行（`python demo.py`，模型 gpt-5.6-luna）：
 
 ```text
 步骤 1：遇到新格式 A —— 自定义竖线分隔格式
@@ -90,15 +90,27 @@ python demo.py --help                # 查看全部参数
   🔎 检测到无法解析的新格式，触发自愈。报错：没有任何已注册解析器能解析该行：...
   --- 第 1/3 次：Agent 生成解析代码 ---
     | import re
+    | _PATTERN = re.compile(
+    |     r"^\s*"
+    |     r"(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)"
+    |     r"\s*\|\s*(?P<level>[A-Za-z]+)\s*\|\s*(?P<module>[^|]+?)"
+    |     r"\s*\|\s*step\s*=\s*(?P<step>\d+)\s*\|\s*(?P<message>\S(?:.*\S)?)\s*$"
+    | )
     | def parse(line: str) -> dict | None:
-    |     pattern = r'^(?P<timestamp>\S+)\|(?P<level>\S+)\|(?P<module>\S+)\|step=(?P<step>\d+)\|(?P<message>.+)$'
-    |     ...
+    |     match = _PATTERN.match(line)
+    |     if not match:
+    |         return None
+    |     fields = match.groupdict()
+    |     fields["module"] = fields["module"].strip()
+    |     fields["message"] = fields["message"].strip()
+    |     fields["step"] = int(fields["step"])
+    |     return fields
   🧪 自动测试（数据结构断言）：
     [样本1] 通过，解析出字段：['level', 'message', 'module', 'step', 'timestamp']
   ✅ 自动测试通过，已热更新注册解析器 'pipe_parser' 并持久化到 parsers/pipe_parser.py
 (c) 热更新后重新解析同样的日志，预期【成功】：
   ✅ [pipe_parser] {'_parser': 'pipe_parser', 'timestamp': '2026-07-17T10:23:01Z',
-     'level': 'INFO', 'module': 'agent.planner', 'step': '3', 'message': 'Generated plan with 5 actions'}
+     'level': 'INFO', 'module': 'agent.planner', 'step': 3, 'message': 'Generated plan with 5 actions'}
 ...
 演示结束
 新格式 A（竖线分隔）自愈结果：成功

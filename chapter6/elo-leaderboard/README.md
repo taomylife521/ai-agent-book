@@ -81,7 +81,7 @@ python cli.py                     # 等价于 python cli.py pipeline
 
   **两种评判后端（`--judge-backend {anthropic,openrouter,auto}`，默认 `auto`）**：
   - `anthropic`：官方 `anthropic` SDK，用 `ANTHROPIC_API_KEY`。
-  - `openrouter`：OpenAI 兼容 SDK 指向 `https://openrouter.ai/api/v1`，用 `OPENROUTER_API_KEY`。内部 Claude 名字会自动映射为 OpenRouter id（`claude-opus-4-8` → `anthropic/claude-opus-4.8`，`claude-haiku-4-5` → `anthropic/claude-haiku-4.5`）；已含 `/` 的 id（如 `openai/gpt-4o-mini`）原样透传。当直连 Anthropic key 缺失或失效时用它兜底。
+  - `openrouter`：OpenAI 兼容 SDK 指向 `https://openrouter.ai/api/v1`，用 `OPENROUTER_API_KEY`。内部 Claude 名字会自动映射为 OpenRouter id（`claude-opus-4-8` → `anthropic/claude-opus-4.8`，`claude-haiku-4-5` → `anthropic/claude-haiku-4.5`）；已含 `/` 的 id（如 `openai/gpt-5.6-luna`）原样透传。当直连 Anthropic key 缺失或失效时用它兜底。
   - `auto`（默认）：有 `ANTHROPIC_API_KEY` 走 anthropic，否则回退 openrouter。注意 `auto` 只看 key 是否存在、不校验有效性；若 `ANTHROPIC_API_KEY` 存在但已失效，请显式 `--judge-backend openrouter`。
 
   位置偏差消除与 A/B/tie 解析逻辑与后端无关，两条路径完全一致。

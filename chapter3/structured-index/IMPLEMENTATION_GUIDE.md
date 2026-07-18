@@ -244,7 +244,7 @@ summarization_length: 200 # Summary word count
 chunk_size: 1200              # Words per chunk
 max_knowledge_triples: 10     # Triples per chunk
 community_detection: "leiden" # Algorithm choice
-summarization_model: "gpt-4o-mini"
+summarization_model: "gpt-5.6-luna"
 ```
 
 ## Extending the System

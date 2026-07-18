@@ -58,7 +58,7 @@ python index_local_laws_contextual.py --max-docs 10
 python index_local_laws_contextual.py --categories "宪法" "民法典"
 
 # Use different LLM provider
-python index_local_laws_contextual.py --llm-provider openai --llm-model gpt-4o
+python index_local_laws_contextual.py --llm-provider openai --llm-model gpt-5.6-luna
 
 # Custom batch size for indexing
 python index_local_laws_contextual.py --batch-size 20

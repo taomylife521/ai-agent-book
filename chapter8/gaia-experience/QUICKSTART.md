@@ -109,7 +109,7 @@ async def run_custom_task():
     # Setup agent with learning
     config = AgentConfig(
         llm_provider="openai",
-        llm_model_name="gpt-4o",
+        llm_model_name="gpt-5.6-luna",
         llm_api_key="your-key"
     )
     
@@ -178,8 +178,8 @@ mkdir -p kb_index experiences workspace
    ```
 
 3. **Use Appropriate Models**: 
-   - Main agent: `gpt-4o` for complex reasoning
-   - Summarization: `gpt-4o-mini` for cost efficiency
+   - Main agent: `gpt-5.6-sol` for complex reasoning
+   - Summarization: `gpt-5.6-luna` for cost efficiency
 
 4. **Monitor Token Usage**: Check logs for token consumption
    ```bash

@@ -18,7 +18,7 @@ class Config:
     OPENROUTER_BASE_URL: str = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
     
     # Model Configuration
-    MODEL_NAME: str = os.getenv("MODEL_NAME", "openai/gpt-5-2025-08-07")
+    MODEL_NAME: str = os.getenv("MODEL_NAME", "openai/gpt-5.6-sol")
     
     # Request Configuration
     DEFAULT_TEMPERATURE: float = float(os.getenv("DEFAULT_TEMPERATURE", "0.3"))

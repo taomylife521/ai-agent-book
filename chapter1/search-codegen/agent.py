@@ -57,7 +57,7 @@ class GPT5NativeAgent:
         self, 
         api_key: str, 
         base_url: str = "https://openrouter.ai/api/v1",
-        model: str = "openai/gpt-5-2025-08-07"
+        model: str = "openai/gpt-5.6-sol"
     ):
         """
         Initialize the GPT-5 agent with OpenRouter API
@@ -65,7 +65,7 @@ class GPT5NativeAgent:
         Args:
             api_key: OpenRouter API key
             base_url: OpenRouter API base URL
-            model: Model identifier (default: openai/gpt-5-2025-08-07)
+            model: Model identifier (default: openai/gpt-5.6-sol)
         """
         self.api_key = api_key
         self.base_url = base_url

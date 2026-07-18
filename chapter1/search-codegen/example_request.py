@@ -44,7 +44,7 @@ def make_gpt5_openrouter_request(
     
     # Build request with OpenRouter-specific parameters (matching Go GPT5OpenRouterRequest)
     request_body = {
-        "model": "openai/gpt-5-2025-08-07",  # Default from Go code
+        "model": "openai/gpt-5.6-sol",  # Default from Go code
         "messages": messages,
         "tools": [web_search_tool],
         "tool_choice": "auto",

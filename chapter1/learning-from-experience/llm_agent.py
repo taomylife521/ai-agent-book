@@ -182,7 +182,13 @@ ACTION: take red key
         try:
             print("\n🤔 LLM is thinking...")
             
-            # Call Kimi K3 API
+            # Call Kimi K3 API.
+            # Kimi K3 is a REASONING model: its chain-of-thought is billed as
+            # completion tokens (returned separately in message.reasoning_content),
+            # and the final answer in message.content is only emitted AFTER the
+            # reasoning finishes. A small max_tokens can therefore be consumed
+            # entirely by reasoning, truncating content to empty and breaking the
+            # ACTION parse. Keep a generous budget so the ACTION line survives.
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
@@ -190,15 +196,17 @@ ACTION: take red key
                     {"role": "user", "content": prompt}
                 ],
                 temperature=_reasoning_safe_temperature(self.model, self.temperature),
-                max_tokens=500
+                max_tokens=2048
             )
             
             self.api_calls += 1
             if hasattr(response.usage, 'total_tokens'):
                 self.total_tokens += response.usage.total_tokens
             
-            # Extract action from response
-            response_text = response.choices[0].message.content
+            # Extract action from response (final answer lives in .content;
+            # reasoning models expose their thinking separately in
+            # .reasoning_content, which we don't need for action parsing).
+            response_text = response.choices[0].message.content or ""
             
             if verbose:
                 print("\n📝 LLM Reasoning:")

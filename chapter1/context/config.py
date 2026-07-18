@@ -113,7 +113,7 @@ class Config:
             return cls.MODEL_NAME
         
         if provider == "siliconflow":
-            return "Qwen/Qwen3-235B-A22B-Thinking-2507"
+            return "Qwen/Qwen3.5-397B-A17B"
         elif provider == "doubao":
             return "doubao-seed-1-6-thinking-250715"
         elif provider == "kimi" or provider == "moonshot":

@@ -1,10 +1,10 @@
 # GPT-5 Native Tools Agent
 
-An advanced AI agent leveraging GPT-5's native `web_search` tool through the OpenRouter API, matching the exact implementation pattern from production Go code. This agent can search the internet for real-time information and provide code-based analysis using GPT-5's built-in capabilities.
+An advanced AI agent leveraging GPT-5's native `web_search` and `code_interpreter` tools through the OpenRouter API, matching the exact implementation pattern from production Go code. This agent can search the internet for real-time information and run code for deep analysis using GPT-5's built-in capabilities, realizing the "搜索 → 阅读 → 分析 → 再搜索" Deep Research loop.
 
 ## 🌟 Features
 
-- **Native Tool Support**: Utilizes GPT-5's built-in `web_search` tool with OpenRouter-specific format
+- **Native Tool Support**: Utilizes GPT-5's built-in `web_search` and `code_interpreter` tools with OpenRouter-specific format
 - **OpenRouter Integration**: Exact API format matching production Go implementation
 - **Web Search Capability**: 
   - Real-time internet search for current information
@@ -44,7 +44,7 @@ Edit `.env` file with your settings:
 
 ```env
 OPENROUTER_API_KEY=sk-or-v1-your-api-key-here
-MODEL_NAME=openai/gpt-5-2025-08-07
+MODEL_NAME=openai/gpt-5.6-sol
 DEFAULT_TEMPERATURE=0.3
 DEFAULT_MAX_TOKENS=4000
 ```
@@ -210,7 +210,7 @@ Run specific tests:
 python test_agent.py
 
 # Run specific test
-python main.py --mode test --test combined
+python main.py --mode test --test basic
 ```
 
 Available test names: `basic`, `analysis`, `complex`, `code`, `reasoning`, `search_analyze`, `chain`
@@ -235,7 +235,7 @@ When running in interactive mode, the following commands are available:
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `OPENROUTER_API_KEY` | Your OpenRouter API key | Required |
-| `MODEL_NAME` | GPT-5 model identifier | `openai/gpt-5-2025-08-07` |
+| `MODEL_NAME` | GPT-5 model identifier | `openai/gpt-5.6-sol` |
 | `DEFAULT_TEMPERATURE` | Response randomness (0-1) | `0.3` |
 | `DEFAULT_MAX_TOKENS` | Maximum response length | `4000` |
 | `DEFAULT_TOOL_CHOICE` | Tool selection strategy | `auto` |
@@ -283,7 +283,7 @@ This project is part of the AI Agent实战训练营 curriculum.
 
 ## 🔗 Resources
 
-- [OpenRouter GPT-5 API](https://openrouter.ai/openai/gpt-5)
+- [OpenRouter GPT-5 API](https://openrouter.ai/openai/gpt-5.6-sol)
 - [OpenAI Native Tools Documentation](https://platform.openai.com/docs/guides/tools)
 - [OpenRouter Documentation](https://openrouter.ai/docs)
 - [API Keys](https://openrouter.ai/keys)

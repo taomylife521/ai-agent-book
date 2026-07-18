@@ -262,10 +262,14 @@ learning-from-experience/
 ### LLM Agent (Kimi K3)
 
 - **Model**: `kimi-k3` (Kimi K3; override with `--model` or `MOONSHOT_MODEL`)
+- **Reasoning model**: Kimi K3 emits a chain-of-thought (`message.reasoning_content`) before its
+  final answer (`message.content`), so the code uses a generous `max_tokens=2048` to make sure the
+  `ACTION:` line is not truncated by the reasoning budget.
 - **Learning Method**: In-context learning with experience memory (up to 50 experiences)
 - **Context Management**: Stores successful and failed experiences
 - **Reasoning**: Prompts LLM to reason about past experiences before acting
-- **Temperature**: 0.7 for balanced exploration/exploitation
+- **Temperature**: requested 0.7, but reasoning models (Kimi K3, GPT-5) only accept
+  `temperature=1`, so the code auto-forces `1` for those (see `_reasoning_safe_temperature`)
 
 ## 📈 Extending the Experiment
 

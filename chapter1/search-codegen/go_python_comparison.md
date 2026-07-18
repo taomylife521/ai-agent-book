@@ -87,7 +87,7 @@ request_body = {
    }
    ```
 
-4. **Model Default**: Both default to `openai/gpt-5-2025-08-07`
+4. **Model Default**: Both default to `openai/gpt-5.6-sol`
 
 5. **Reasoning Levels**: Both support "low", "medium", and "high" reasoning effort
 

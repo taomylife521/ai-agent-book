@@ -338,7 +338,7 @@ class ContextAwareAgent:
                 api_key=api_key,
                 base_url="https://api.siliconflow.cn/v1"
             )
-            self.model = model or "Qwen/Qwen3-235B-A22B-Thinking-2507"
+            self.model = model or "Qwen/Qwen3.5-397B-A17B"
         elif self.provider == "doubao":
             self.client = OpenAI(
                 api_key=api_key,

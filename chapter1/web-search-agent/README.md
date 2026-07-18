@@ -177,14 +177,14 @@ python examples.py
 | `KIMI_API_KEY` | 旧版 API 密钥变量名（向后兼容） | 可选 |
 | `KIMI_BASE_URL` | API 基础 URL | `https://api.moonshot.cn/v1` |
 | `DEFAULT_MODEL` | 默认模型 | `kimi-k3` |
-| `MAX_SEARCH_ITERATIONS` | 最大搜索迭代次数（Config 中设置） | 3 |
+| `MAX_SEARCH_ITERATIONS` | 最大搜索迭代次数（Config 中设置） | 5 |
 | `SEARCH_TIMEOUT` | 搜索超时时间（秒） | 30 |
 | `temperature` | 控制生成内容的创造性 | 0.6 |
 
 ## 📊 技术特点
 
 ### 核心技术
-- **Kimi API**: 使用 Moonshot AI 的最新 K2 模型（kimi-k3）
+- **Kimi API**: 使用 Moonshot AI 的最新 Kimi K3 模型（kimi-k3，原生联网搜索的推理模型）
 - **内置工具调用**: 利用 Kimi 的 `$web_search` 内置函数
 - **迭代式搜索**: 支持多轮搜索直到获得充分信息（最多5次迭代）
 - **上下文管理**: 维护完整对话历史，支持连续对话

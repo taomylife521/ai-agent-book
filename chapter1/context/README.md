@@ -23,12 +23,12 @@ This project implements a context-aware AI agent with multiple tools (PDF parsin
 - **Best for**: Advanced reasoning, faster responses, both English and Chinese tasks
 
 ### SiliconFlow
-- **Model**: Qwen/Qwen3-235B-A22B-Thinking-2507 (customizable)
+- **Model**: Qwen/Qwen3.5-397B-A17B (customizable)
 - **API**: OpenAI-compatible
 - **Best for**: Complex reasoning tasks, detailed analysis
 
 ### Kimi (Moonshot AI)
-- **Model**: kimi-k3 (K2 model)
+- **Model**: kimi-k3 (K3 reasoning model; temperature is forced to 1 and max_tokens is large enough for its thinking output)
 - **API**: OpenAI-compatible via Moonshot platform
 - **Best for**: Advanced reasoning, multi-turn conversations, both English and Chinese tasks
 - **Features**: Context caching for cost optimization

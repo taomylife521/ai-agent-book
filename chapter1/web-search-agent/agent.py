@@ -100,6 +100,8 @@ class WebSearchAgent:
         # ReAct 轨迹：按顺序记录每一步的思考/行动/观察，便于展示与调试
         self.trace: List[Dict[str, Any]] = []
         self.temperature = 0.6
+        # 推理模型（Kimi K3）需要充足的输出预算，避免最终答案被截断
+        self.max_tokens = 4096
 
     def _emit(self, step: Dict[str, Any]):
         """记录一条 ReAct 轨迹步骤，并在 verbose 模式下实时打印。"""
@@ -153,6 +155,9 @@ class WebSearchAgent:
             model=self.model,
             messages=messages,
             temperature=_reasoning_safe_temperature(self.model, self.temperature),
+            # Kimi K3 是推理模型，会先产出较长的 reasoning_content，需要给最终回答
+            # 留足输出预算（Moonshot 要求 max_tokens>=2048），否则答案可能被截断为空。
+            max_tokens=self.max_tokens,
             tools=self._get_tools()
         )
         return completion.choices[0]
@@ -202,8 +207,25 @@ class WebSearchAgent:
                     # 处理工具调用
                     logger.info(f"模型请求调用 {len(choice.message.tool_calls)} 个工具")
 
-                    # 添加助手的消息（包含工具调用）到历史
-                    self.conversation_history.append(choice.message)
+                    # 添加助手的消息（包含工具调用）到历史。
+                    # 注意：必须把消息重建为纯 dict，而不是直接塞入 SDK 返回的
+                    # pydantic message 对象——后者会附带 reasoning_content / refusal
+                    # 等额外字段，回传给 Moonshot 时会触发 "tokenization failed" 400 错误。
+                    self.conversation_history.append({
+                        "role": "assistant",
+                        "content": choice.message.content or "",
+                        "tool_calls": [
+                            {
+                                "id": tc.id,
+                                "type": "function",
+                                "function": {
+                                    "name": tc.function.name,
+                                    "arguments": tc.function.arguments,
+                                },
+                            }
+                            for tc in choice.message.tool_calls
+                        ],
+                    })
 
                     # 执行每个工具调用
                     for tool_call in choice.message.tool_calls:

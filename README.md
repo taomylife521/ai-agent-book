@@ -857,10 +857,10 @@ git clone https://github.com/joonspk-research/generative_agents.git    chapter10
 
 <a href="https://star-history.com/#bojieli/ai-agent-book&Date">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/bojieli/ai-agent-book/star-history/assets/my-star-history/star-history-dark.svg" />
-    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/bojieli/ai-agent-book/star-history/assets/my-star-history/star-history-light.svg" />
-    <img alt="Star History Chart" src="https://raw.githubusercontent.com/bojieli/ai-agent-book/star-history/assets/my-star-history/star-history-light.svg" width="720" />
+    <source media="(prefers-color-scheme: dark)" srcset="assets/star-history-dark.png" />
+    <source media="(prefers-color-scheme: light)" srcset="assets/star-history-light.png" />
+    <img alt="Star History Chart" src="assets/star-history-light.png" width="720" />
   </picture>
 </a>
 
-<sub>图表由 [GitHub Actions 定时任务](.github/workflows/star-history.yml) 每周自动生成 star-history 风格图并提交到 <code>star-history</code> 分支，本地托管、不受外部限流影响；点击可跳转到 star-history.com 查看实时数据。</sub>
+<sub>图表由 [`scripts/gen_star_history.py`](scripts/gen_star_history.py) 绘制（自 2026 年 7 月 13 日起），[GitHub Actions 定时任务](.github/workflows/star-history.yml) 每天自动更新并提交到 <code>assets/</code> 目录；点击可跳转到 star-history.com 查看实时数据。</sub>

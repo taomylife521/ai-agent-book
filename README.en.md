@@ -853,10 +853,10 @@ This project is licensed under the [Apache License 2.0](LICENSE). See the [`LICE
 
 <a href="https://star-history.com/#bojieli/ai-agent-book&Date">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/bojieli/ai-agent-book/star-history/assets/my-star-history/star-history-dark.svg" />
-    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/bojieli/ai-agent-book/star-history/assets/my-star-history/star-history-light.svg" />
-    <img alt="Star History Chart" src="https://raw.githubusercontent.com/bojieli/ai-agent-book/star-history/assets/my-star-history/star-history-light.svg" width="720" />
+    <source media="(prefers-color-scheme: dark)" srcset="assets/star-history-dark.png" />
+    <source media="(prefers-color-scheme: light)" srcset="assets/star-history-light.png" />
+    <img alt="Star History Chart" src="assets/star-history-light.png" width="720" />
   </picture>
 </a>
 
-<sub>Chart automatically generated weekly by a [GitHub Actions scheduled task](.github/workflows/star-history.yml) in the star-history style and committed to the <code>star-history</code> branch, hosted locally without external rate limits; click to view real-time data on star-history.com.</sub>
+<sub>Chart drawn by [`scripts/gen_star_history.py`](scripts/gen_star_history.py) (starting July 13, 2026) and refreshed daily by a [GitHub Actions scheduled task](.github/workflows/star-history.yml), committed to the <code>assets/</code> directory; click to view real-time data on star-history.com.</sub>

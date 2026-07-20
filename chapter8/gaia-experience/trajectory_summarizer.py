@@ -213,7 +213,7 @@ Format your response as JSON with keys: "summary", "approach", "key_insights" (l
             action = step.get('action', {})
             
             # Extract key information
-            tool_name = action.get('tool_name', 'unknown')
+            tool_name = action.get('tool_name') or 'unknown'
             action_name = action.get('action_name', '')
             params = action.get('params', {})
             
@@ -284,7 +284,7 @@ Format your response as JSON with keys: "summary", "approach", "key_insights" (l
         
         for step in trajectory:
             action = step.get('action', {})
-            tool_name = action.get('tool_name', 'unknown')
+            tool_name = action.get('tool_name') or 'unknown'
             
             # Categorize action
             if 'search' in tool_name.lower():

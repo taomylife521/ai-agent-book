@@ -163,14 +163,17 @@ async def generate_distillation_data(
         max_tokens: Maximum tokens to generate
         tensor_parallel_size: Number of GPUs to use for tensor parallelism
     """
-    from vllm import LLM, SamplingParams
-
     print(f"Loading input sentences from {input_file}")
     with open(input_file, "r", encoding="utf-8") as f:
         sentences = [line.strip() for line in f if line.strip()]
-    
+
     print(f"Loaded {len(sentences)} sentences")
-    
+    if not sentences:
+        print("Input file has no sentences to process, skipping data generation.")
+        return
+
+    from vllm import LLM, SamplingParams
+
     # Initialize vLLM model
     print(f"Initializing teacher model: {model_name}")
     print(f"Using tensor parallelism across {tensor_parallel_size} GPU(s)")

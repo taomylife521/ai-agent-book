@@ -41,7 +41,10 @@ def web_search(query: str, num_results: int = 6) -> dict:
     if not query:
         return {"success": False, "error": "search query is empty", "results": []}
 
-    num_results = max(1, min(int(num_results), 10))
+    try:  # 模型可能传 null 或非数字字符串，兜底为默认值
+        num_results = max(1, min(int(num_results or 6), 10))
+    except (TypeError, ValueError):
+        num_results = 6
     headers = {
         "User-Agent": (
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "

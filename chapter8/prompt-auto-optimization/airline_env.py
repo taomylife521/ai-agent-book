@@ -139,7 +139,7 @@ def _run_tool(name: str, args: dict) -> str:
         text = _POLICY_REFUND.get(fare, _POLICY_REFUND["经济舱特价票"])
         return json.dumps({"fare_type": fare, "policy": text}, ensure_ascii=False)
     if name == "get_baggage_policy":
-        cabin = args.get("cabin", "经济舱")
+        cabin = args.get("cabin") or "经济舱"
         free = "20kg" if "经济" in cabin else "30kg"
         return json.dumps(
             {"cabin": cabin, "free_allowance": free, "excess_fee": "逾重费 50 元/kg"},

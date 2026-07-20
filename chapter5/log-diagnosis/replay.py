@@ -46,7 +46,7 @@ def load_trajectories(path: str = _DATA) -> Dict[str, Dict[str, Any]]:
 # ---------------- 断言求值器 ----------------
 
 def _tool_turns(traj: Dict[str, Any], tool: str) -> List[Dict[str, Any]]:
-    return [t for t in traj["turns"] if t.get("tool") == tool]
+    return [t for t in traj.get("turns", []) if t.get("tool") == tool]
 
 
 def _eval_assertion(assertion: Dict[str, Any], traj: Dict[str, Any]) -> Tuple[bool, str]:

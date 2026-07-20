@@ -173,7 +173,13 @@ class MultiRoleOrchestrator:
                 if impl is None:
                     result = f"工具 {name} 不存在。"
                 else:
-                    result = impl(**args)
+                    try:
+                        result = impl(**args)
+                    except (TypeError, ValueError) as exc:
+                        # 模型偶尔会传错/漏参数（如 {"q": ...} 而非 {"query": ...}）
+                        # 或给出无法转换的值；把错误作为工具结果回给模型让它自行纠正，
+                        # 而不是让整个移交流程崩溃。
+                        result = f"工具 {name} 调用失败：{exc}。请检查参数名与取值后重试。"
                     self.activity.append((self.current_role, "tool", name))
                 # 防死循环：同一 (角色,工具,参数) 反复调用时给出纠偏提示
                 sig = f"{self.current_role}:{name}:{tc.function.arguments}"

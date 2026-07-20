@@ -195,15 +195,17 @@ class StagedAgent:
             self._log("记录需求", f"{args.get('key')} = {args.get('value')}")
             return res
         if name == "write_file":
-            res = self.workspace.write_file(args.get("path", ""), args.get("content", ""))
+            # 模型偶尔对必填字段显式传 null：.get(..., "") 兜不住 None，统一归一化为空串。
+            res = self.workspace.write_file(args.get("path") or "", args.get("content") or "")
             self._log("写文件", res)
             return res
         if name == "read_file":
             self._log("读文件", args.get("path", ""))
             return self.workspace.read_file(args.get("path", ""))
         if name == "execute_code":
-            self._log("执行代码自测", args.get("code", "")[:80].replace("\n", " ") + " ...")
-            return self.workspace.execute_code(args.get("code", ""))
+            code = args.get("code") or ""
+            self._log("执行代码自测", code[:80].replace("\n", " ") + " ...")
+            return self.workspace.execute_code(code)
         if name == "run_linter":
             res = self.workspace.run_linter(args.get("file", ""))
             self._log("run_linter", res.splitlines()[0])

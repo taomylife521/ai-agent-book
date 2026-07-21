@@ -135,7 +135,11 @@ def tool_run_skill_script(catalog: dict, name: str, script: str, payload: str,
     info = catalog.get(name)
     if not info:
         return f"[error] 未找到 Skill: {name}"
-    script_path = (info["dir"] / "scripts" / script).resolve()
+    scripts_dir = (info["dir"] / "scripts").resolve()
+    script_path = (scripts_dir / script).resolve()
+    # 防目录穿越：脚本会被直接执行，必须落在该 skill 的 scripts 目录内
+    if not script_path.is_relative_to(scripts_dir):
+        return f"[error] 非法脚本路径: {script}"
     if not script_path.exists():
         return f"[error] 脚本不存在: {script}"
 

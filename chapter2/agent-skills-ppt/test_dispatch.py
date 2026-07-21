@@ -8,6 +8,7 @@ incomplete LLM tool call crashed the whole run with KeyError. Fixed to
 return "[error] ..." strings that the agent can recover from.
 """
 
+import os
 from pathlib import Path
 
 from demo import dispatch, scan_skill_catalog
@@ -42,3 +43,24 @@ def test_valid_read_skill_still_works():
     result = dispatch(catalog, "read_skill", {"name": "pptx"}, OUT)
     assert not result.startswith("[error]")
     assert len(result) > 0
+
+
+def test_run_skill_script_rejects_absolute_path(tmp_path):
+    """run_skill_script executes the file, so it must stay inside scripts/."""
+    outside = tmp_path / "evil.py"
+    outside.write_text("raise AssertionError('executed out-of-tree script')")
+    catalog = scan_skill_catalog()
+    result = dispatch(catalog, "run_skill_script",
+                      {"name": "pptx", "script": str(outside), "payload": "{}"}, OUT)
+    assert result.startswith("[error]")
+
+
+def test_run_skill_script_rejects_parent_traversal(tmp_path):
+    outside = tmp_path / "evil.py"
+    outside.write_text("raise AssertionError('executed out-of-tree script')")
+    catalog = scan_skill_catalog()
+    scripts_dir = (catalog["pptx"]["dir"] / "scripts").resolve()
+    rel = os.path.relpath(outside, scripts_dir)
+    result = dispatch(catalog, "run_skill_script",
+                      {"name": "pptx", "script": rel, "payload": "{}"}, OUT)
+    assert result.startswith("[error]")

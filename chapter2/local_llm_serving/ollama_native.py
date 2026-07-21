@@ -5,6 +5,7 @@ Uses Ollama's standard tool calling API (requires compatible models)
 
 import json
 import logging
+from concurrent.futures import ThreadPoolExecutor
 from typing import List, Dict, Any, Optional
 import ollama
 from tools import ToolRegistry
@@ -41,8 +42,39 @@ class OllamaNativeAgent:
             tools.append(tool_def)
         return tools
     
-    def chat(self, message: str, use_tools: bool = True, 
-             temperature: float = 0.7, stream: bool = False) -> str:
+    def _execute_tool_calls(self, tool_calls: List[Dict[str, Any]]) -> List[str]:
+        """
+        Execute tool calls and return results in order.
+        Multiple tool calls in the same turn are executed in parallel (they are
+        independent by construction, since the model generated all of them
+        without seeing any result).
+        """
+        def run_one(tool_call: Dict[str, Any]) -> str:
+            function = tool_call.get('function', {})
+            tool_name = function.get('name')
+            tool_args = function.get('arguments')
+            
+            # Parse arguments if they're a string
+            if isinstance(tool_args, str):
+                try:
+                    tool_args = json.loads(tool_args)
+                except json.JSONDecodeError:
+                    logger.error(f"Failed to parse tool arguments: {tool_args}")
+                    tool_args = {}
+            
+            # Execute the tool
+            logger.info(f"Executing tool: {tool_name} with args: {tool_args}")
+            return self.tool_registry.execute_tool(tool_name, tool_args)
+        
+        if len(tool_calls) <= 1:
+            return [run_one(tc) for tc in tool_calls]
+        
+        # Independent tool calls run concurrently; executor.map preserves order
+        with ThreadPoolExecutor(max_workers=len(tool_calls)) as executor:
+            return list(executor.map(run_one, tool_calls))
+    
+    def chat(self, message: str, use_tools: bool = True,  
+             temperature: float = 0.3, stream: bool = False) -> str:
         """
         Send a message using Ollama's native tool calling
         
@@ -92,25 +124,11 @@ class OllamaNativeAgent:
                     "tool_calls": tool_calls
                 })
                 
-                # Execute each tool call
-                for tool_call in tool_calls:
-                    function = tool_call.get('function', {})
-                    tool_name = function.get('name')
-                    tool_args = function.get('arguments')
-                    
-                    # Parse arguments if they're a string
-                    if isinstance(tool_args, str):
-                        try:
-                            tool_args = json.loads(tool_args)
-                        except json.JSONDecodeError:
-                            logger.error(f"Failed to parse tool arguments: {tool_args}")
-                            tool_args = {}
-                    
-                    # Execute the tool
-                    logger.info(f"Executing tool: {tool_name} with args: {tool_args}")
-                    result = self.tool_registry.execute_tool(tool_name, tool_args)
-                    
-                    # Add tool result to conversation
+                # Execute the tool calls (independent calls run in parallel)
+                results = self._execute_tool_calls(tool_calls)
+                
+                # Add tool results to conversation
+                for result in results:
                     self.conversation_history.append({
                         "role": "tool",
                         "content": result
@@ -152,7 +170,7 @@ class OllamaNativeAgent:
             return f"Error: {e}"
     
     def chat_stream(self, message: str, use_tools: bool = True,
-                    temperature: float = 0.7):
+                    temperature: float = 0.3):
         """
         Stream a message to the model and handle tool calls in a ReAct loop
         
@@ -188,6 +206,7 @@ class OllamaNativeAgent:
                 
                 collected_content = []
                 tool_calls_detected = False
+                pending_tool_calls = []
                 thinking_buffer = ""
                 in_thinking = False
                 
@@ -252,10 +271,9 @@ class OllamaNativeAgent:
                     
                     # Check for tool calls in the chunk
                     if 'tool_calls' in message_chunk:
-                        tool_calls = message_chunk['tool_calls']
                         tool_calls_detected = True
                         
-                        for tool_call in tool_calls:
+                        for tool_call in message_chunk['tool_calls']:
                             function = tool_call.get('function', {})
                             tool_name = function.get('name')
                             tool_args = function.get('arguments')
@@ -267,21 +285,30 @@ class OllamaNativeAgent:
                                 except json.JSONDecodeError:
                                     tool_args = {}
                             
-                            # Yield tool call info
-                            yield {"type": "tool_call", "content": {"name": tool_name, "arguments": tool_args}}
-                            
-                            # Execute the tool
-                            logger.info(f"Executing tool: {tool_name} with args: {tool_args}")
-                            result = self.tool_registry.execute_tool(tool_name, tool_args)
-                            
-                            # Yield tool result
-                            yield {"type": "tool_result", "content": result}
-                            
-                            # Add tool result to conversation
-                            self.conversation_history.append({
-                                "role": "tool",
-                                "content": result
-                            })
+                            # Collect the tool call; execution happens after the
+                            # stream finishes so calls can run in parallel.
+                            # Skip duplicates: some servers stream the accumulated
+                            # tool_calls list in every chunk.
+                            if not any(
+                                tc.get('function', {}).get('name') == tool_name
+                                and tc.get('function', {}).get('arguments') == function.get('arguments')
+                                for tc in pending_tool_calls
+                            ):
+                                pending_tool_calls.append(tool_call)
+                                yield {"type": "tool_call", "content": {"name": tool_name, "arguments": tool_args}}
+                
+                # Execute all tool calls from this turn in parallel
+                if pending_tool_calls:
+                    results = self._execute_tool_calls(pending_tool_calls)
+                    for result in results:
+                        # Yield tool result
+                        yield {"type": "tool_result", "content": result}
+                        
+                        # Add tool result to conversation
+                        self.conversation_history.append({
+                            "role": "tool",
+                            "content": result
+                        })
                 
                 # Save complete response to history
                 complete_response = ''.join(collected_content)
@@ -341,7 +368,7 @@ class OllamaOpenAICompatible:
         logger.info(f"✅ Initialized Ollama OpenAI-compatible client with {model}")
     
     def chat(self, message: str, use_tools: bool = True,
-             temperature: float = 0.7) -> str:
+             temperature: float = 0.3) -> str:
         """
         Chat using OpenAI-compatible endpoint
         """
@@ -386,8 +413,9 @@ class OllamaOpenAICompatible:
                     ]
                 })
                 
-                # Execute tool calls
-                for tool_call in assistant_message.tool_calls:
+                # Execute tool calls (independent calls run in parallel;
+                # executor.map preserves order)
+                def run_one(tool_call):
                     # Parse arguments
                     try:
                         args = json.loads(tool_call.function.arguments)
@@ -395,12 +423,20 @@ class OllamaOpenAICompatible:
                         args = {}
                     
                     # Execute tool
-                    result = self.tool_registry.execute_tool(
+                    return self.tool_registry.execute_tool(
                         tool_call.function.name,
                         args
                     )
-                    
-                    # Add tool result
+                
+                tool_calls_list = list(assistant_message.tool_calls)
+                if len(tool_calls_list) <= 1:
+                    results = [run_one(tc) for tc in tool_calls_list]
+                else:
+                    with ThreadPoolExecutor(max_workers=len(tool_calls_list)) as executor:
+                        results = list(executor.map(run_one, tool_calls_list))
+                
+                # Add tool results
+                for tool_call, result in zip(tool_calls_list, results):
                     self.conversation_history.append({
                         "role": "tool",
                         "tool_call_id": tool_call.id,

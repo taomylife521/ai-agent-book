@@ -7,7 +7,7 @@ import json
 import uuid
 import logging
 from concurrent.futures import ThreadPoolExecutor
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 from openai import OpenAI
 from tools import ToolRegistry
 from config import OPENAI_API_BASE, OPENAI_API_KEY, LOG_LEVEL
@@ -147,8 +147,40 @@ After receiving tool results, use them to provide a comprehensive answer to the 
         with ThreadPoolExecutor(max_workers=len(tool_calls)) as executor:
             return list(executor.map(run_one, tool_calls))
     
-    def chat(self, message: str, use_tools: bool = True, 
-             temperature: float = 0.7, max_tokens: int = 2048, 
+    def _execute_single_tool(self, tool_data: Dict[str, Any]) -> Tuple[str, bool]:
+        """
+        Execute one parsed tool call ({"name": ..., "arguments": ...}).
+        Returns (result_text, is_error) with error messages formatted clearly.
+        """
+        tool_name = tool_data["name"]
+        try:
+            result = self.tool_registry.execute_tool(tool_name, tool_data["arguments"])
+        except Exception as e:
+            logger.error(f"Tool execution error: {e}")
+            return f"❌ Tool execution exception: {str(e)}", True
+        
+        # Check if the result indicates an error
+        try:
+            result_dict = json.loads(result) if isinstance(result, str) else result
+            if isinstance(result_dict, dict) and not result_dict.get("success", True):
+                # Tool execution failed - format error message clearly
+                error_msg = f"❌ Tool '{tool_name}' execution failed:\n"
+                if "error" in result_dict:
+                    error_msg += f"Error: {result_dict['error']}\n"
+                if "error_type" in result_dict:
+                    error_msg += f"Type: {result_dict['error_type']}\n"
+                if "traceback" in result_dict:
+                    error_msg += f"Traceback:\n{result_dict['traceback']}\n"
+                
+                logger.error(f"Tool {tool_name} failed: {result_dict.get('error', 'Unknown error')}")
+                return error_msg, True
+        except (json.JSONDecodeError, TypeError):
+            # Result is not JSON, just pass it through
+            pass
+        return result, False
+    
+    def chat(self, message: str, use_tools: bool = True,  
+             temperature: float = 0.3, max_tokens: int = 2048, 
              stream: bool = False) -> str:
         """
         Send a message to the model and handle tool calls in a ReAct loop
@@ -233,10 +265,22 @@ After receiving tool results, use them to provide a comprehensive answer to the 
                 logger.info(f"Model requested {len(tool_calls)} tool call(s)")
                 
                 # Add assistant message with tool calls to history
+                # (arguments must be a JSON string per the OpenAI API spec)
                 self.conversation_history.append({
                     "role": "assistant",
                     "content": content,
-                    "tool_calls": tool_calls
+                    "tool_calls": [
+                        {
+                            **tc,
+                            "function": {
+                                **tc["function"],
+                                "arguments": tc["function"]["arguments"]
+                                if isinstance(tc["function"]["arguments"], str)
+                                else json.dumps(tc["function"]["arguments"])
+                            }
+                        }
+                        for tc in tool_calls
+                    ]
                 })
                 
                 # Execute tool calls
@@ -276,7 +320,7 @@ After receiving tool results, use them to provide a comprehensive answer to the 
         logger.info("Conversation history reset")
     
     def chat_stream(self, message: str, use_tools: bool = True,
-                    temperature: float = 0.7, max_tokens: int = 2048):
+                    temperature: float = 0.3, max_tokens: int = 2048):
         """
         Stream a message to the model and handle tool calls in a ReAct loop
         
@@ -326,6 +370,7 @@ After receiving tool results, use them to provide a comprehensive answer to the 
             collected_content = []
             tool_calls_buffer = ""
             tool_calls_detected = False
+            pending_tool_calls = []
             
             # Process the stream
             for chunk in stream_response:
@@ -334,10 +379,12 @@ After receiving tool results, use them to provide a comprehensive answer to the 
                     if delta.content:
                         content_chunk = delta.content
                         collected_content.append(content_chunk)
+                        buffered_this_chunk = False
                         
                         # Check if this is internal thinking (between <think> tags)
                         if '<think>' in content_chunk or tool_calls_buffer:
                             tool_calls_buffer += content_chunk
+                            buffered_this_chunk = True
                             if '</think>' in tool_calls_buffer:
                                 # Extract and yield thinking
                                 import re
@@ -350,65 +397,58 @@ After receiving tool results, use them to provide a comprehensive answer to the 
                         
                         # Check for tool calls
                         if '<tool_call>' in content_chunk or tool_calls_buffer:
-                            tool_calls_buffer += content_chunk
-                            if '</tool_call>' in tool_calls_buffer:
+                            if not buffered_this_chunk:
+                                tool_calls_buffer += content_chunk
+                            # Collect all complete tool calls; they are executed
+                            # in parallel once the stream finishes
+                            while '</tool_call>' in tool_calls_buffer:
                                 tool_calls_detected = True
-                                # Parse and execute tool call
                                 import re
                                 tool_match = re.search(r'<tool_call>(.*?)</tool_call>', tool_calls_buffer, re.DOTALL)
-                                if tool_match:
-                                    try:
-                                        tool_data = json.loads(tool_match.group(1).strip())
-                                        yield {"type": "tool_call", "content": tool_data}
-                                        
-                                        # Execute the tool
-                                        result = self.tool_registry.execute_tool(
-                                            tool_data["name"], 
-                                            tool_data["arguments"]
-                                        )
-                                        
-                                        # Check if the result indicates an error
-                                        try:
-                                            result_dict = json.loads(result) if isinstance(result, str) else result
-                                            if isinstance(result_dict, dict) and not result_dict.get("success", True):
-                                                # Tool execution failed - format error message clearly
-                                                error_msg = f"❌ Tool '{tool_data['name']}' execution failed:\n"
-                                                if "error" in result_dict:
-                                                    error_msg += f"Error: {result_dict['error']}\n"
-                                                if "error_type" in result_dict:
-                                                    error_msg += f"Type: {result_dict['error_type']}\n"
-                                                if "traceback" in result_dict:
-                                                    error_msg += f"Traceback:\n{result_dict['traceback']}\n"
-                                                
-                                                logger.error(f"Tool {tool_data['name']} failed: {result_dict.get('error', 'Unknown error')}")
-                                                result = error_msg
-                                                yield {"type": "tool_error", "content": error_msg}
-                                            else:
-                                                yield {"type": "tool_result", "content": result}
-                                        except (json.JSONDecodeError, TypeError):
-                                            # Result is not JSON, just pass it through
-                                            yield {"type": "tool_result", "content": result}
-                                        
-                                        # Add to history
-                                        self.conversation_history.append({
-                                            "role": "user",
-                                            "content": f'<tool_response>\n{result}\n</tool_response>',
-                                            "name": tool_data["name"]
-                                        })
-                                    except Exception as e:
-                                        error_msg = f"❌ Tool execution exception: {str(e)}"
-                                        logger.error(f"Tool execution error: {e}")
-                                        yield {"type": "tool_error", "content": error_msg}
-                                        # Add error to history so agent can see it
-                                        self.conversation_history.append({
-                                            "role": "user",
-                                            "content": f'<tool_response>\n{error_msg}\n</tool_response>',
-                                            "name": tool_data.get("name", "unknown")
-                                        })
-                                tool_calls_buffer = ""
+                                if not tool_match:
+                                    break
+                                try:
+                                    tool_data = json.loads(tool_match.group(1).strip())
+                                    pending_tool_calls.append(tool_data)
+                                    yield {"type": "tool_call", "content": tool_data}
+                                except Exception as e:
+                                    error_msg = f"❌ Tool call parse exception: {str(e)}"
+                                    logger.error(f"Tool call parse error: {e}")
+                                    yield {"type": "tool_error", "content": error_msg}
+                                    # Add error to history so agent can see it
+                                    self.conversation_history.append({
+                                        "role": "user",
+                                        "content": f'<tool_response>\n{error_msg}\n</tool_response>',
+                                        "name": "unknown"
+                                    })
+                                # Keep any trailing partial tool call for the next chunk
+                                tool_calls_buffer = tool_calls_buffer[tool_match.end():]
                         else:
                             # Regular content
                             yield {"type": "content", "content": content_chunk}
+            
+            # Execute all tool calls from this turn in parallel (they are
+            # independent by construction, since the model generated all of
+            # them without seeing any result)
+            if pending_tool_calls:
+                if len(pending_tool_calls) == 1:
+                    outcomes = [self._execute_single_tool(pending_tool_calls[0])]
+                else:
+                    with ThreadPoolExecutor(max_workers=len(pending_tool_calls)) as executor:
+                        outcomes = list(executor.map(self._execute_single_tool, pending_tool_calls))
+                
+                for tool_data, (result, is_error) in zip(pending_tool_calls, outcomes):
+                    if is_error:
+                        yield {"type": "tool_error", "content": result}
+                    else:
+                        yield {"type": "tool_result", "content": result}
+                    
+                    # Add to history
+                    self.conversation_history.append({
+                        "role": "user",
+                        "content": f'<tool_response>\n{result}\n</tool_response>',
+                        "name": tool_data["name"]
+                    })
             
             # Save complete response to history
             complete_response = ''.join(collected_content)

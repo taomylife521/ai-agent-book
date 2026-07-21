@@ -50,7 +50,7 @@
 
   /** Strip the site's sub-path prefix (e.g. /ai-agent-book/) from a pathname. */
   function siteBasePath() {
-    try { return new URL(window.SITE_ROOT).pathname + "/"; } catch (_) {}
+    try { return new URL(window.SITE_ROOT).pathname; } catch (_) {}
     // Fallback: compute from current page.
     var p = location.pathname;
     // Heuristic: site root is everything up to the first book/ segment.

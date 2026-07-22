@@ -306,6 +306,11 @@ class LearningAgent:
                 # If replay failed, fall back to learning mode
                 if not result['success']:
                     logger.warning("Replay failed, falling back to learning mode")
+                    # The LLM loop is about to run, so this is no longer a
+                    # replay run. Leaving the flag set makes the summary log and
+                    # the demos report "0 LLM calls / Nx faster" for a run that
+                    # actually made real LLM calls.
+                    self.metrics['replay_used'] = False
                     result = await self._run_with_learning(max_steps)
             
             else:

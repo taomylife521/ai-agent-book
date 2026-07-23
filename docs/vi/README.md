@@ -1,14 +1,14 @@
 # Hiểu sâu về AI Agent: Nguyên lý thiết kế và thực hành kỹ thuật
 
-[![PDF](https://img.shields.io/badge/PDF-tải%20về-success.svg)](#-sách-điện-tử) [![Đọc trực tuyến](https://img.shields.io/badge/🌐_Đọc_trực_tuyến-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/) [![Stars](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../../LICENSE) [![Languages](https://img.shields.io/badge/dịch-6%20ngôn%20ngữ-informational.svg)](#-sách-điện-tử)
+[![PDF](https://img.shields.io/badge/PDF-tải%20về-success.svg)](#-sách-điện-tử) [![Đọc trực tuyến](https://img.shields.io/badge/🌐_Đọc_trực_tuyến-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/) [![Stars](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../../LICENSE) [![Languages](https://img.shields.io/badge/dịch-7%20ngôn%20ngữ-informational.svg)](#-sách-điện-tử)
 
-**[中文](../../README.md) · [正體中文](../zh-TW/README.md) · [English](../en/README.md) · [Русский](../ru/README.md) · Tiếng Việt ← hiện tại · [தமிழ்](../ta/README.md)**
+**[中文](../../README.md) · [正體中文](../zh-TW/README.md) · [English](../en/README.md) · [Русский](../ru/README.md) · Tiếng Việt ← hiện tại · [தமிழ்](../ta/README.md) · [日本語](../ja/README.md)**
 
 > 📥 **[Tải PDF / EPUB](#-sách-điện-tử)** (khuyên dùng) — nên đọc sách qua bản PDF / EPUB để có trải nghiệm tốt nhất; bạn cũng có thể [đọc trực tuyến](https://bojieli.github.io/ai-agent-book/) (chuyển đổi ngôn ngữ, mục lục đóng/mở được, tìm kiếm toàn văn; tự động xây dựng lại sau mỗi lần đẩy lên main).
 
 **Agent = LLM + Context + Tools** — Cuốn sách xây dựng trên công thức cốt lõi này qua 10 chương, đưa AI Agent từ nguyên lý đến thực hành kỹ thuật. Toàn bộ nội dung, hình minh họa và **92 thí nghiệm đi kèm** đều là mã nguồn mở. Hoan nghênh bạn tự chạy các thí nghiệm.
 
-| 📚 **10 chương** nội dung, từ nền tảng đến sản xuất | 📂 **92** dự án đi kèm (70+ chạy độc lập) | 🌐 **6 ngôn ngữ**: Trung / 正體中文 / Anh / Nga / Tamil / Việt |
+| 📚 **10 chương** nội dung, từ nền tảng đến sản xuất | 📂 **92** dự án đi kèm (70+ chạy độc lập) | 🌐 **7 ngôn ngữ**: Trung / 正體中文 / Anh / Nga / Tamil / Việt / Nhật |
 | :---: | :---: | :---: |
 
 ## 📖 Sách điện tử
@@ -20,12 +20,13 @@
 > - **Tiếng Nga**（dịch cộng đồng, by [@ui99ru](https://github.com/ui99ru)）：[PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ru.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ru.epub)
 > - **Tiếng Tamil**（dịch cộng đồng, by [@nsdevaraj](https://github.com/nsdevaraj)）：[PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ta.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ta.epub)
 > - **Tiếng Việt**（dịch cộng đồng, by [@toanalien](https://github.com/toanalien)）：[PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-vi.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-vi.epub)
+> - **Tiếng Nhật**（dịch cộng đồng, by [@eltociear](https://github.com/eltociear)）：[PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ja.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ja.epub)
 >
 > 🌐 Bạn cũng có thể [đọc trực tuyến](https://bojieli.github.io/ai-agent-book/) — chuyển đổi ngôn ngữ, mục lục đóng/mở được, tìm kiếm toàn văn và liên kết trực tiếp đến các thí nghiệm kèm theo. Tự động xây dựng lại sau mỗi lần đẩy lên main.
 
-Mã nguồn tiếng Trung nằm trong [`book/`](../../book/); các bản Trung phồn thể (Đài Loan)/Anh/Nga/Tamil/Việt là đóng góp cộng đồng (có thể chậm hơn bản gốc), nằm trong [`book-zhtw/`](../../book-zhtw/), [`book-en/`](../../book-en/), [`book-ru/`](../../book-ru/), [`book-ta/`](../../book-ta/), [`book-vi/`](../../book-vi/).
+Mã nguồn tiếng Trung nằm trong [`book/`](../../book/); các bản Trung phồn thể (Đài Loan)/Anh/Nga/Tamil/Việt/Nhật là đóng góp cộng đồng (có thể chậm hơn bản gốc), nằm trong [`book-zhtw/`](../../book-zhtw/), [`book-en/`](../../book-en/), [`book-ru/`](../../book-ru/), [`book-ta/`](../../book-ta/), [`book-vi/`](../../book-vi/), [`book-ja/`](../../book-ja/).
 
-Trình dựng chung tạo sách EPUB 3 cho tiếng Trung giản thể, tiếng Trung phồn thể (Đài Loan), tiếng Anh, tiếng Nga, tiếng Tamil và tiếng Việt. Xem [hướng dẫn dựng EPUB](../../EPUB.md).
+Trình dựng chung tạo sách EPUB 3 cho tiếng Trung giản thể, tiếng Trung phồn thể (Đài Loan), tiếng Anh, tiếng Nga, tiếng Tamil, tiếng Việt và tiếng Nhật. Xem [hướng dẫn dựng EPUB](../../EPUB.md).
 
 <details>
 <summary><b>🔧 Tự build PDF?</b> (cần pandoc / xelatex / ElegantBook)</summary>
@@ -148,7 +149,7 @@ Sách và mã đi kèm hoàn toàn mã nguồn mở. Rất hoan nghênh Pull Req
 | 🐛 **Cải tiến code & sửa bug** | Dự án đi kèm mạnh mẽ hơn, dễ dùng hơn, gần sản xuất hơn |
 | 🧪 **Dự án thực hành mới** | Bổ sung/thay thế cài đặt tốt hơn cho thí nghiệm, hoặc đóng góp ví dụ mới |
 | 🎨 **Cải tiến hình vẽ** | Biểu đồ trong `book/images/` rõ và đẹp hơn (do `book/gen_*_figs.py` tạo) |
-| 🌐 **Bản dịch ngôn ngữ mới** | Hoan nghênh dịch sang nhiều ngôn ngữ; xem Trung phồn thể/Đài Loan (`book-zhtw/`), tiếng Anh (`book-en/`), Tamil (`book-ta/`), Việt (`book-vi/`) |
+| 🌐 **Bản dịch ngôn ngữ mới** | Hoan nghênh dịch sang nhiều ngôn ngữ; xem Trung phồn thể/Đài Loan (`book-zhtw/`), tiếng Anh (`book-en/`), Tamil (`book-ta/`), Việt (`book-vi/`), Nhật (`book-ja/`) |
 
 Trước khi gửi, hãy chạy thí nghiệm liên quan để xác nhận tái hiện; có thể mở issue thảo luận trước.
 

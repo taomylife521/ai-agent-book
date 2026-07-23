@@ -49,7 +49,7 @@ Where:
 ## Installation
 
 ```bash
-cd projects/week6/elo-leaderboard
+cd chapter6/elo-leaderboard
 pip install -r requirements.txt
 ```
 
@@ -646,7 +646,7 @@ R_A_new = R_A + K * (S_A - E_A)
 ### 安装与运行
 
 ```bash
-cd projects/week6/elo-leaderboard
+cd chapter6/elo-leaderboard
 pip install -r requirements.txt
 ```
 

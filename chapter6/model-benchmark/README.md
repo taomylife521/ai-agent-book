@@ -14,7 +14,7 @@ The original chapter workflow describes hourly probes, multiple context windows,
 
 | Metric | Meaning | How measured |
 |---|---|---|
-| Success rate | Availability | failed request count / total |
+| Success rate | Availability | successful request count / total |
 | TTFT | Time to first token | stream first non-empty chunk - request start |
 | End-to-end latency | complete response time | request start -> final chunk |
 | Throughput (tokens/s) | generation speed | output token count / (end-to-end - TTFT) |
@@ -22,7 +22,7 @@ The original chapter workflow describes hourly probes, multiple context windows,
 | std | standard deviation | per-provider latency dispersion |
 | aggregate throughput / RPS | batch throughput metrics | aggregated output token rate and request rate |
 
-If usage usage-completion is unavailable, token count falls back to chunk-count approximation with documented caveat.
+If `usage.completion_tokens` is unavailable, token count falls back to chunk-count approximation with a documented caveat.
 
 ## Run
 

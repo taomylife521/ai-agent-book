@@ -36,7 +36,7 @@ CER-based objective metrics are computed with normalized transcript comparison.
 - `--providers` enables cross-provider comparisons.
 - Missing key -> that provider is skipped; the benchmark continues.
 
-### Judge/backed details
+### Judge/backend details
 
 - Default rubric path uses OpenAI: Whisper (`whisper-1`) for transcript + `gpt-5.6-luna` for scoring.
 - OpenRouter fallback is supported only for rubric chat judging (`gpt-*` mapping handled).
@@ -75,7 +75,7 @@ Outputs are under `output/` (audio) and `output/results.json` (structured result
 
 ### Robustness notes
 
-- Missing key checks and ffprobe checks fail fast with clear instructions.
+- Required-key (`OPENAI_API_KEY`) and ffprobe checks fail fast with clear instructions; a provider-specific missing key only marks that provider's cells as failed without stopping the run.
 - A single failed (provider, text) cell does not stop the full run.
 - OpenAI SDK is configured with retries.
 

@@ -98,6 +98,9 @@ plugins:
 markdown_extensions:
   - admonition
   - attr_list
+  # Render the book's `[^label]` citations as superscript links with a
+  # collected reference list at the bottom of each page (issue #328).
+  - footnotes
   - md_in_html
   - toc:
       permalink: true

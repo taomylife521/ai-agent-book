@@ -50,6 +50,7 @@ def evaluate_case(system_prompt: str, case: dict, verbose: bool = False) -> dict
     transferred = result["transferred"]
     should_transfer = case["should_transfer"]
 
+    handled = None
     if should_transfer:
         correct = transferred
         note = "应转接：" + ("已转接 ✓" if transferred else "未转接 ✗")
@@ -72,6 +73,7 @@ def evaluate_case(system_prompt: str, case: dict, verbose: bool = False) -> dict
         "final_text": result["final_text"],
         "transfer_reason": result["transfer_reason"],
         "tool_calls": result["tool_calls"],
+        "handled": handled,
     }
     if verbose:
         icon = "✓" if correct else "✗"

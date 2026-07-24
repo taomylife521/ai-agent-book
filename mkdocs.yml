@@ -179,7 +179,7 @@ nav:
   - 第7章 模型后训练:
       - book/chapter7/index.md
       - 配套实验: chapter7/README.md
-  - 第8章 Agent的自我进化:
+  - 第8章 Agent的持续进化:
       - book/chapter8/index.md
       - 配套实验: chapter8/README.md
   - 第9章 多模态与实时交互:

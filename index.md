@@ -71,8 +71,8 @@ description: 围绕核心公式 Agent = LLM + 上下文 + 工具,用 10 章把 A
 </a>
 
 <a class="exp-card" href="book/chapter8/">
-<span class="exp-title">🌱 第 8 章 · Agent 的自我进化</span>
-<span class="exp-desc">外部化学习、工具创造、经验积累——Agent 自己变得更聪明</span>
+<span class="exp-title">🌱 第 8 章 · Agent 的持续进化</span>
+<span class="exp-desc">从可靠学习信号到知识、指令、程序与参数更新</span>
 </a>
 
 <a class="exp-card" href="book/chapter9/">

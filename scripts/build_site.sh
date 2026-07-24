@@ -34,7 +34,10 @@ for n in 1 2 3 4 5 6 7 8 9 10; do
   src="$DEST/book/chapter$n.md"
   [ -f "$src" ] || continue
   mkdir -p "$DEST/book/chapter$n"
-  sed -e 's|](images/|](../images/|g' "$src" > "$DEST/book/chapter$n/index.md"
+  sed \
+    -e 's|](images/|](../images/|g' \
+    -e 's|](../chapter|](../../chapter|g' \
+    "$src" > "$DEST/book/chapter$n/index.md"
   rm "$src"
 done
 
@@ -83,6 +86,11 @@ rm -rf \
   "$DEST/chapter3/contextual-retrieval/laws" \
   "$DEST/chapter3/agentic-rag/laws" \
   2>/dev/null || true
+
+# Vendored JavaScript dependencies can contain thousands of their own
+# Markdown files. They are irrelevant to the book site and make MkDocs scan
+# needlessly large directory trees after the file-type cleanup above.
+find "$DEST" -type d -name node_modules -prune -exec rm -rf {} +
 
 # Rewrite the relative links used inside the experiment READMEs so they
 # resolve correctly in the MkDocs site. Source files are NOT modified —

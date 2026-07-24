@@ -1,6 +1,6 @@
 ## English
 
-# Experiment 8-5: Agent Finds Tools from the Web and Achieves Self-Evolution (Alita Style)
+# Supplementary Case: Agent Finds and Validates Tools from the Web (Alita Style)
 
 > Companion code for "Deep Understanding of AI Agents" · ★★★
 > Core concept: **"Minimum predefined, maximum self-evolution"**.
@@ -147,7 +147,7 @@ This experiment **executes model-generated code** and **installs third-party pac
 
 ## 中文
 
-# 实验 8-5：Agent 从网络上寻找工具，实现自我进化（Alita 式）
+# 补充案例：Agent 从网络寻找并验证工具（Alita 式）
 
 > 《深入理解 AI Agent》配套代码 · ★★★
 > 核心理念：**「最小预定义，最大自我进化」**。
